@@ -20,10 +20,13 @@ public class GameManager : MonoBehaviour
 
     public List<SmallBox> smallBox;
     private int smallBoxCount;
-    private int smallBoxCounter=0;
     public Text ScoreText; 
+    public float SaveDelay= 3.0f;
 
-    public int score;
+    private float _saveDelayCounter;
+    private int smallBoxCounter=0;
+
+    private int score;
 
     private List<GameObject> spawnedSmallBox;
 
@@ -34,19 +37,39 @@ public class GameManager : MonoBehaviour
         smallBoxCount= Random.Range(5, 10);
         while(smallBoxCounter<=smallBoxCount)
         {
-            float randomPositionx = Random.Range(-8.5f , 8.5f);
-            float randomPositiony = Random.Range(-4.5f , 4.5f);
-            SpawnSmallBox(randomPositionx, randomPositiony);
+            SpawnSmallBox();
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        float deltaTime = Time.unscaledDeltaTime;
+            _saveDelayCounter -= deltaTime;
+        if(smallBoxCounter<=smallBoxCount){
+            if(_saveDelayCounter < 0f)
+            {
+                SpawnSmallBox();
+            }
+        }
+
+        if(_saveDelayCounter < 0f)
+        {
+            _saveDelayCounter = SaveDelay;
+        }
     }
 
-    void SpawnSmallBox(float posx, float posy){
+    void SpawnSmallBox(){
+        float posx = Random.Range(-8.5f , 8.5f);
+        float posy = Random.Range(-4.5f , 4.5f);
+        Vector2 rand_pos = new Vector2(posx, posy);
+
+        RaycastHit2D hit = Physics2D.Raycast(rand_pos, Vector2.up, 0f);
+        if (hit.collider != null)
+        {
+            SpawnSmallBox();
+        }
+
         GameObject newSmallBox = Instantiate(smallBox[Random.Range(0, smallBox.Count)].gameObject, transform);
 
         newSmallBox.transform.position = new Vector2(posx, posy);
@@ -56,6 +79,8 @@ public class GameManager : MonoBehaviour
 
     public void AddScore(){
         score +=1;
+        smallBoxCounter-=1;
         ScoreText.text= $"Score {score.ToString("0")}";
+
     }
 }
