@@ -17,23 +17,37 @@ public class GameManager : MonoBehaviour
             return _instance; 
         } 
     } 
-
+    [Header("Prefabs")]
     public List<SmallBox> smallBox;
+    public List<Projectile> projectile;
+    [Header("UI")]
+    public UIGameOver GameOverUI;
+
     private int smallBoxCount;
     public Text ScoreText; 
-    public float SaveDelay= 3.0f;
+    public float SmallBoxDelay= 3.0f;
+    public float ProjectileDelay= 5.0f;
 
-    private float _saveDelayCounter;
+    private float _smallBoxDelayCounter;
+    private float _projectileDelayCounter;
     private int smallBoxCounter=0;
 
     private int score;
 
     private List<GameObject> spawnedSmallBox;
+    private List<GameObject> spawnedProjectile;
+    
+    
+
+    public bool IsGameOver { get { return isGameOver; } }
+
+    private bool isGameOver = false;
 
     // Start is called before the first frame update
     void Start()
     {
         spawnedSmallBox = new List<GameObject>();
+        spawnedProjectile = new List<GameObject>();
         smallBoxCount= Random.Range(5, 10);
         while(smallBoxCounter<=smallBoxCount)
         {
@@ -45,18 +59,28 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         float deltaTime = Time.unscaledDeltaTime;
-            _saveDelayCounter -= deltaTime;
+        _smallBoxDelayCounter -= deltaTime;
         if(smallBoxCounter<=smallBoxCount){
-            if(_saveDelayCounter < 0f)
+            if(_smallBoxDelayCounter < 0f)
             {
                 SpawnSmallBox();
+                
             }
         }
 
-        if(_saveDelayCounter < 0f)
+        if(_smallBoxDelayCounter < 0f)
         {
-            _saveDelayCounter = SaveDelay;
+            SpawnProjectile();
+            _smallBoxDelayCounter = SmallBoxDelay;
         }
+
+        // float deltaTime2 = Time.unscaledDeltaTime;
+        // _projectileDelayCounter -= deltaTime2;
+        // if(_projectileDelayCounter < 0f){
+        //     SpawnProjectile();
+        //     _projectileDelayCounter= ProjectileDelay;
+        // }
+        
     }
 
     void SpawnSmallBox(){
@@ -81,6 +105,41 @@ public class GameManager : MonoBehaviour
         score +=1;
         smallBoxCounter-=1;
         ScoreText.text= $"Score {score.ToString("0")}";
+    }
 
+    public void SpawnProjectile(){
+        float rand_num= Random.Range(0,2f);
+        float posy;
+        float posx;
+        float rotate;
+        if(rand_num<=1.0f){
+            posx = Random.Range(-8.0f , 8.0f);
+            posy = 4.2f;
+            float rand_pos= Random.Range(0,2f);
+            rotate = -90;
+            if(rand_pos<=1.0f){
+                posy= -posy;
+                rotate= -rotate;
+            }
+        }else{
+            posy = Random.Range(-4.2f , 4.2f);
+            posx = 8.0f;
+            float rand_pos= Random.Range(0,2f);
+            rotate = 180;
+            if(rand_pos<=1.0f){
+                posx= -posx;
+                rotate = 0;
+            }
+        }
+        GameObject newProjectile = Instantiate(projectile[Random.Range(0, projectile.Count)].gameObject, transform);
+        newProjectile.transform.position = new Vector2(posx, posy);
+        newProjectile.transform.eulerAngles = new Vector3 (0, 0, rotate);
+        spawnedProjectile.Add(newProjectile);
+    }
+
+    public void GameOver()
+    {
+        isGameOver = true;
+        GameOverUI.Show();
     }
 }
