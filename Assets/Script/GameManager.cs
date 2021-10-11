@@ -28,7 +28,6 @@ public class GameManager : MonoBehaviour
     public float SmallBoxDelay= 3.0f;
     public float ProjectileDelay= 5.0f;
 
-    private float _smallBoxDelayCounter;
     private float _projectileDelayCounter;
     private int smallBoxCounter=0;
 
@@ -59,27 +58,15 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         float deltaTime = Time.unscaledDeltaTime;
-        _smallBoxDelayCounter -= deltaTime;
-        if(smallBoxCounter<=smallBoxCount){
-            if(_smallBoxDelayCounter < 0f)
-            {
-                SpawnSmallBox();
-                
-            }
-        }
+        _projectileDelayCounter -= deltaTime;
+        
 
-        if(_smallBoxDelayCounter < 0f)
+        if(_projectileDelayCounter < 0f)
         {
             SpawnProjectile();
-            _smallBoxDelayCounter = SmallBoxDelay;
+            _projectileDelayCounter = SmallBoxDelay;
         }
 
-        // float deltaTime2 = Time.unscaledDeltaTime;
-        // _projectileDelayCounter -= deltaTime2;
-        // if(_projectileDelayCounter < 0f){
-        //     SpawnProjectile();
-        //     _projectileDelayCounter= ProjectileDelay;
-        // }
         
     }
 
@@ -105,6 +92,7 @@ public class GameManager : MonoBehaviour
         score +=1;
         smallBoxCounter-=1;
         ScoreText.text= $"Score {score.ToString("0")}";
+        Invoke("SpawnSmallBox", 3.0f);
     }
 
     public void SpawnProjectile(){
