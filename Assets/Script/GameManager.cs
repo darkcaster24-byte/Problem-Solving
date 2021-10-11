@@ -23,7 +23,6 @@ public class GameManager : MonoBehaviour
     public Text ScoreText; 
     public float SaveDelay= 3.0f;
 
-    private float _saveDelayCounter;
     private int smallBoxCounter=0;
 
     private int score;
@@ -44,19 +43,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float deltaTime = Time.unscaledDeltaTime;
-            _saveDelayCounter -= deltaTime;
-        if(smallBoxCounter<=smallBoxCount){
-            if(_saveDelayCounter < 0f)
-            {
-                SpawnSmallBox();
-            }
-        }
 
-        if(_saveDelayCounter < 0f)
-        {
-            _saveDelayCounter = SaveDelay;
-        }
     }
 
     void SpawnSmallBox(){
@@ -81,6 +68,6 @@ public class GameManager : MonoBehaviour
         score +=1;
         smallBoxCounter-=1;
         ScoreText.text= $"Score {score.ToString("0")}";
-
+        Invoke("SpawnSmallBox",3.0f);
     }
 }
